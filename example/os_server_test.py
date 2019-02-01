@@ -1,6 +1,6 @@
 import threading
 
-from Daemon import Dæmon
+from Dæmon import Dæmon
 
 print("Summoning dæmon 6001.")
 d1 = Dæmon(6001)

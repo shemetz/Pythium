@@ -38,7 +38,7 @@ class Dæmon:
         The default destination (Ⳛ) is the Obedience Scheme ("OS") - it will
         usually obey your commands if they are of the correct pattern.
 
-        To send a datum to another Daemon, set destination to be the true
+        To send a datum to another Dæmon, set destination to be the true
         name of that dæmon. Data sent to a false name will be forever lost in
         the ethereal plane, resulting in a DæmonicMistake being raised.
         """
