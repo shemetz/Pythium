@@ -86,20 +86,20 @@ class Dæmon:
     # --- Core --- #
 
     def __init__(
-            ⶆ,
+            ⶇ,
             true_name: Insignia,
             nickname: speech = None,
     ):
-        ⶆ.true_name = true_name
-        ⶆ.nickname = nickname
-        ⶆ.state = "SUMMONED"
-        ⶆ.send({"kind": "SUMMONED"})
-        ⶆ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
+        ⶇ.true_name = true_name
+        ⶇ.nickname = nickname
+        ⶇ.state = "SUMMONED"
+        ⶇ.send({"kind": "SUMMONED"})
+        ⶇ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
 
-    def name(ⶆ) -> str:
-        return ⶆ.nickname or f"{ⶆ.sigil}-{ⶆ.true_name}"
+    def name(ⶇ) -> str:
+        return ⶇ.nickname or f"{ⶇ.sigil}-{ⶇ.true_name}"
 
-    def send(ⶆ, data: Atlas, destination: Insignia = Ⳛ):
+    def send(ⶇ, data: Atlas, destination: Insignia = Ⳛ):
         """Call this to send data to a destination.
 
         The default destination (Ⳛ) is the Obedience Scheme ("OS") - it will
@@ -109,8 +109,8 @@ class Dæmon:
         name of that dæmon. Data sent to a false name will be forever lost in
         the ethereal plane, resulting in a FalseInsignia being raised.
         """
-        assert destination != ⶆ.true_name, "dæmons have no reflection"
-        data.update({"dæmon_name": ⶆ.name(), "origin": ⶆ.true_name})
+        assert destination != ⶇ.true_name, "dæmons have no reflection"
+        data.update({"dæmon_name": ⶇ.name(), "origin": ⶇ.true_name})
         data_bites = polyglot.dumps(data, ensure_ascii=False, indent=4).encode()
         try:
             propagator = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
@@ -124,14 +124,14 @@ class Dæmon:
                 f"There is no entity with the insignia {destination}! You have"
                 f" been led astray!") from None
 
-    def lurk(ⶆ):
-        ⶆ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
-        ⶆ.ear.bind((ⶽ, ⶆ.true_name))  # (possess the local host's cyberspace)
-        ⶆ.ear.listen(666)
-        ⶆ.state = "LURKING"
-        ⶆ.send({"kind": "LURKING"})
-        while ⶆ.state == "LURKING":
-            bond, addr = ⶆ.ear.accept()
+    def lurk(ⶇ):
+        ⶇ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
+        ⶇ.ear.bind((ⶽ, ⶇ.true_name))  # (possess the local host's cyberspace)
+        ⶇ.ear.listen(666)
+        ⶇ.state = "LURKING"
+        ⶇ.send({"kind": "LURKING"})
+        while ⶇ.state == "LURKING":
+            bond, addr = ⶇ.ear.accept()
             manuscript = tabula_rasa
             more_to_come = "👍"
             while more_to_come:
@@ -139,28 +139,28 @@ class Dæmon:
                 manuscript += more_to_come
             textual_data = manuscript.decode()
             data = polyglot.loads(textual_data)
-            ⶆ.receive(data)
+            ⶇ.receive(data)
 
-    def receive(ⶆ, data: Atlas):
+    def receive(ⶇ, data: Atlas):
         """This is automantically called when the OS sends data to the Dæmon.
         """
-        if not ⶆ.follow_instinct(data):
-            ⶆ.obey(data)
+        if not ⶇ.follow_instinct(data):
+            ⶇ.obey(data)
 
     # --- Habits --- #
 
-    def murmur(ⶆ, message: speech):
+    def murmur(ⶇ, message: speech):
         """Whisper a word or two to the Obedience Scheme, so that it dutifully
         etches it into the eternal logs."""
-        ⶆ.send({"kind": "MURMUR", "message": message})
+        ⶇ.send({"kind": "MURMUR", "message": message})
 
-    def banish(ⶆ):
+    def banish(ⶇ):
         """Banish this dæmon from the human world."""
-        ⶆ.state = "BANISHED"
-        ⶆ.send({"kind": "BANISHED"})
-        ⶆ.ear.close()
+        ⶇ.state = "BANISHED"
+        ⶇ.send({"kind": "BANISHED"})
+        ⶇ.ear.close()
 
-    def follow_instinct(ⶆ, data: Atlas) -> Choice:
+    def follow_instinct(ⶇ, data: Atlas) -> Choice:
         """Dæmons have many natural instincts, and will react to certain kinds
         of data with the same common behavior. It is important to read and fully
         understand these basic instinctual laws of behavior, as many dæmonic
@@ -186,26 +186,26 @@ class Dæmon:
         """
         kind = data.get("kind", "NO KIND")
         if kind == "BANISH":
-            ⶆ.banish()
+            ⶇ.banish()
             return compliance
         if kind == "PING":
-            ⶆ.murmur("I am here.")
+            ⶇ.murmur("I am here.")
             return compliance
         if kind == "RENAME":
-            ⶆ.nickname = data.get("nickname", None)
+            ⶇ.nickname = data.get("nickname", None)
             return compliance
         if kind == "ECHO_REQUEST":
-            ⶆ.send({"kind": "ECHO_RESPOND"}, data.get("origin", Ⳛ))
+            ⶇ.send({"kind": "ECHO_RESPOND"}, data.get("origin", Ⳛ))
             return compliance
         return apathy
 
     # --- Personality --- #
-    sigil = "ⶆ"
+    sigil = "ⶇ"
 
-    def obey(ⶆ, data: Atlas):
+    def obey(ⶇ, data: Atlas):
         """Dæmons will react to data that they receive by following these rules.
         It is important to remember, however, that some of their more basic
         instincts will be followed first, unless the dæmon is explicitly taught
         otherwise."""
-        ⶆ.murmur(f"I have received {data.get('kind', 'something')}!"
+        ⶇ.murmur(f"I have received {data.get('kind', 'something')}!"
                  f" What shall I do now, master?")
