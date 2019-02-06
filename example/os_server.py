@@ -16,9 +16,15 @@ while True:
         msg = conn.recv(1024)
         buffer += msg
     data = json.loads(buffer.decode())
-    if data["kind"] == "LOG":
-        print(data["name"], "-", data["message"])
+    if data["kind"] == "MURMUR":
+        print(data["dæmon_name"] + ":", data["message"])
+    elif data["kind"] == "SUMMONED":
+        print(data["dæmon_name"], "has been summoned.")
+    elif data["kind"] == "LURKING":
+        print(data["dæmon_name"], "is lurking.")
     elif data["kind"] == "BANISHED":
-        print(data["name"], "has been banished from this mortal coil.")
+        print(data["dæmon_name"], "has been banished.")
+    elif data["kind"] == "TOO_SLOW":
+        print(data["dæmon_name"], "is TOO SLOW!")
     else:
         print(f"Unrecognized kind of message:", data.get('kind', '<no kind>'))

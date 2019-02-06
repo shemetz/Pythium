@@ -1,18 +1,42 @@
-import threading
+from Dæmon import *
+from multiprocessing import Process
+import time
 
-from Dæmon import Dæmon
 
-print("Summoning dæmon 6001.")
-d1 = Dæmon(6001)
-d1.murmur("I have been summoned.")
-print("Summoning dæmon 6002.")
-d2 = Dæmon(6002)
-print("Dæmon 6002 slumbers in the background.")
-d2_thread = threading.Thread(target=d2.slumber, args=())
-d2_thread.daemon = True  # :)
-d2_thread.start()
-print("Dæmon 6001 pokes Dæmon 6002.")
-d1.send({"kind": "POKE"}, 6002)
-print("Banishing dæmons.")
-d1.banish()
-d2.banish()
+class MultiplierDaemon(Dæmon):
+    sigil = "ჯ"
+
+    def obey(self, data):
+        if data["kind"] == "MULTIPLY":
+            result = data["num1"] * data["num2"]
+            self.murmur(result)
+        else:
+            super(MultiplierDaemon, self).obey(data)
+
+
+class Minion(Dæmon):
+    sigil = "📣"
+
+
+def summon_daemon(DaemonKind, true_name):
+    print(f"Summoning dæmon {true_name}.")
+    DaemonKind(true_name).lurk()
+
+
+def send_to_daemon(data, destination):
+    data_bites = polyglot.dumps(data, ensure_ascii=False, indent=4).encode()
+    propagator = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
+    propagator.connect((ⶽ, destination))
+    propagator.send(data_bites)
+    propagator.close()
+
+
+def main_test():
+    Process(target=summon_daemon, args=(MultiplierDaemon, 6001,)).start()
+    time.sleep(1)  # to give the other process time to start
+    send_to_daemon({"kind": "MULTIPLY", "num1": 6, "num2": 7}, 6001)
+    send_to_daemon({"kind": "BANISH"}, 6001)
+
+
+if __name__ == '__main__':
+    main_test()
