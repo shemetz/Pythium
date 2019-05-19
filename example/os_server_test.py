@@ -1,9 +1,10 @@
 from Dæmon import *
+from pandæmonium.simple_dæmons import Astaroth
 from multiprocessing import Process
 import time
 
 
-class MultiplierDaemon(Dæmon):
+class Multiplier(Dæmon):
     sigil = "ჯ"
 
     def obey(self, data):
@@ -11,7 +12,7 @@ class MultiplierDaemon(Dæmon):
             result = data["num1"] * data["num2"]
             self.murmur(result)
         else:
-            super(MultiplierDaemon, self).obey(data)
+            super().obey(data)
 
 
 class Minion(Dæmon):
@@ -24,6 +25,7 @@ def summon_daemon(DaemonKind, true_name):
 
 
 def send_to_daemon(data, destination):
+    print(f"Sending a {data['kind']} to {destination}.")
     data_bites = polyglot.dumps(data, ensure_ascii=False, indent=4).encode()
     propagator = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
     propagator.connect((ⶽ, destination))
@@ -32,10 +34,20 @@ def send_to_daemon(data, destination):
 
 
 def main_test():
-    Process(target=summon_daemon, args=(MultiplierDaemon, 6001,)).start()
+    Process(target=summon_daemon, args=(Multiplier, 6001,)).start()
     time.sleep(1)  # to give the other process time to start
     send_to_daemon({"kind": "MULTIPLY", "num1": 6, "num2": 7}, 6001)
     send_to_daemon({"kind": "BANISH"}, 6001)
+
+    Process(target=summon_daemon, args=(Astaroth, 6002,)).start()
+    time.sleep(1)  # to give the other process time to start
+    send_to_daemon({"kind": "TICK"}, 6002)
+    send_to_daemon({"kind": "TICK"}, 6002)
+    send_to_daemon({"kind": "TICK"}, 6002)
+    send_to_daemon({"kind": "PEEK"}, 6002)
+    send_to_daemon({"kind": "RESET"}, 6002)
+    send_to_daemon({"kind": "PEEK"}, 6002)
+    send_to_daemon({"kind": "BANISH"}, 6002)
 
 
 if __name__ == '__main__':

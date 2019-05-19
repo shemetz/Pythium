@@ -30,10 +30,11 @@ class Dæmon:
 
     - Each dæmon has a special waveform, or frequency, known more commonly
       as its "true name". The true names of dæmons are unique - there can only
-      be one in each cyberspace.
+      be one lurking in the cyberspace, although others with the same name may
+      exist someplace, contained or banished.
     - Knowledge of the true name of a dæmon gives others the ability to interact
       with it, communicating telepathically and instantly, as long as they are
-      within the same cyberspace.
+      within the cyberspace.
     - Dæmons spend their time lurking, simply waiting and listening in their
       mind. The moment they sense somebody speak their true name, they listen
       and then obey their imperatives. Only when they finish fully obeying do
@@ -41,16 +42,24 @@ class Dæmon:
     - The true name of a dæmon must follow the cultural traditions of dæmonkind.
     - Some dæmons are given temporary nicknames by their summoners.
     - After summoning a dæmon, it will need an explicit instruction to start
-      lurking. Beware - once you loose a dæmon on the world, you will not be
-      able to stop it, as your natural instincts will kick into place and you
+      lurking. Beware - once you set a dæmon loose in the world, you will not be
+      able to stop it, command it, run away, ask for help, or do much of
+      anything; your natural humanborn instincts will kick into place and you
       will freeze in fear while experiencing a horrid realization, until the
       dæmon is banished and your panicked state ends.
 
-      Due to this natural phenomenon, it is traditional to procreate for the
-      purpose of creating children, and then letting those children summon the
-      dæmons of your choice, instead of doing it yourself. The trauma that the
-      child experiences will not affect you directly, and the child can safely
-      be discarded once your business with the dæmon has ended.
+      Due to this natural phenomenon, it was once traditional to procreate for
+      the purpose of creating children, and then letting those children summon
+      the dæmons of your choice, instead of doing it yourself. The trauma that
+      the child experiences will not affect you directly, and the child can
+      safely be discarded once your business with the dæmon has concluded.
+
+      In modern times, however, technomagy has progressed and the ethical-moral
+      problem has been solved. Diabolists may simply splinter their soul into
+      several pieces, after being trained to do so, and spend just one of these
+      soul fragments to maintain the connection with the dæmon. Despite some
+      concerns regarding the safety of this process, soul-splintering has never
+      been conclusively linked to premature death or psychosis.
     - A dæmon's only attachment to the mortal plane is the entity that summoned
       it. Once that entity is gone, the dæmon will be banished. In some
       emergency situations, killing the summoner of the dæmon is the only way to
@@ -90,13 +99,17 @@ class Dæmon:
             true_name: Insignia,
             nickname: speech = None,
     ):
+        assert type(true_name) is Insignia and 1024 <= true_name <= 65535
         ⶇ.true_name = true_name
         ⶇ.nickname = nickname
         ⶇ.state = "SUMMONED"
         ⶇ.send({"kind": "SUMMONED"})
         ⶇ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
 
-    def name(ⶇ) -> str:
+    def __repr__(ⶇ) -> speech:
+        return f"{ⶇ.name()} ({ⶇ.state})"
+
+    def name(ⶇ) -> speech:
         return ⶇ.nickname or f"{ⶇ.sigil}-{ⶇ.true_name}"
 
     def send(ⶇ, data: Atlas, destination: Insignia = Ⳛ):
@@ -119,14 +132,23 @@ class Dæmon:
             propagator.close()
         except ConnectionRefusedError:
             if destination == Ⳛ:
-                raise ObedienceSchemeNotFound() from None
+                raise ObedienceSchemeNotFound() from below
             raise FalseInsignia(
                 f"There is no entity with the insignia {destination}! You have"
-                f" been led astray!") from None
+                f" been led astray!") from below
 
     def lurk(ⶇ):
+        if ⶇ.state == "BANISHED":
+            raise BanishedForEternity() from below
         ⶇ.ear = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
-        ⶇ.ear.bind((ⶽ, ⶇ.true_name))  # (possess the local host's cyberspace)
+        try:
+            # (possess the local host's cyberspace)
+            ⶇ.ear.bind((ⶽ, ⶇ.true_name))
+        except OSError:
+            raise DuplicateInsignia(
+                f"An entity with the true name '{ⶇ.true_name}' is already"
+                f" lurking within the cyberspace!"
+            ) from below
         ⶇ.ear.listen(666)
         ⶇ.state = "LURKING"
         ⶇ.send({"kind": "LURKING"})
@@ -142,8 +164,7 @@ class Dæmon:
             ⶇ.receive(data)
 
     def receive(ⶇ, data: Atlas):
-        """This is automantically called when the OS sends data to the Dæmon.
-        """
+        """This is automantically called when the OS sends data to the Dæmon."""
         if not ⶇ.follow_instinct(data):
             ⶇ.obey(data)
 
@@ -155,7 +176,7 @@ class Dæmon:
         ⶇ.send({"kind": "MURMUR", "message": message})
 
     def banish(ⶇ):
-        """Banish this dæmon from the human world."""
+        """Banish this dæmon from the mortal plane."""
         ⶇ.state = "BANISHED"
         ⶇ.send({"kind": "BANISHED"})
         ⶇ.ear.close()
@@ -175,7 +196,7 @@ class Dæmon:
         contract for a bodyguard dæmon that told it to ignore any command that
         banishes it.
 
-        Her purpose has likely been to prevent her enemies from ridding her of
+        Her intent has likely been to prevent her enemies from ridding her of
         her protector, but due to her poor phrasing, the dæmon ended up being
         impossible to banish by any normal means, including her own attempts to
         banish it.
