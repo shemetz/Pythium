@@ -13,19 +13,22 @@ class Astaroth(Dæmon):
     """
     sigil = "ㅞ"
 
-    def __init__(self, true_name: Insignia):
+    def __init__(ㅞ, true_name: Insignia):
         super().__init__(true_name)
-        self.count = 0
+        ㅞ.count = 0
 
-    def obey(self, data):
+    def obey(ㅞ, data: Atlas) -> Response:
         if data["kind"] == "TICK":
-            self.count += 1
+            ㅞ.count += 1
         elif data["kind"] == "PEEK":
-            self.murmur(f"The count is at {self.count}")
+            return ㅞ.count
+        elif data["kind"] == "PEEK_AND_TELL":
+            ㅞ.murmur(f"The count is at {ㅞ.count}")
         elif data["kind"] == "RESET":
-            self.count = 0
+            ㅞ.count = 0
         else:
-            super().obey(data)
+            return super().obey(data)
+        return emptiness
 
 
 class Hatif(Dæmon):
@@ -49,8 +52,8 @@ class Hatif(Dæmon):
     """
     sigil = "𒆙"
 
-    def obey(self, data: Atlas):
+    def obey(𒆙, data: Atlas) -> Response:
         if data["kind"] == "MURMUR":
-            self.murmur(data["message"])
+            return 𒆙.murmur(data["message"])
         else:
-            super().obey(data)
+            return super().obey(data)

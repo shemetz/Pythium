@@ -1,53 +1,106 @@
-from Dæmon import *
+from grimoires.book_of_shadows import *
 from pandæmonium.simple_dæmons import Astaroth
-from multiprocessing import Process
-import time
 
 
 class Multiplier(Dæmon):
     sigil = "ჯ"
 
-    def obey(self, data):
+    def obey(self, data: Atlas) -> Response:
         if data["kind"] == "MULTIPLY":
             result = data["num1"] * data["num2"]
-            self.murmur(result)
+            return result
         else:
-            super().obey(data)
+            return super().obey(data)
 
 
 class Minion(Dæmon):
     sigil = "📣"
 
 
-def summon_daemon(DaemonKind, true_name):
-    print(f"Summoning dæmon {true_name}.")
-    DaemonKind(true_name).lurk()
+class Twin(Dæmon):
+    sigil = "𒀀"
+    twin_name: Insignia
 
-
-def send_to_daemon(data, destination):
-    print(f"Sending a {data['kind']} to {destination}.")
-    data_bites = polyglot.dumps(data, ensure_ascii=False, indent=4).encode()
-    propagator = medium.socket(medium.AF_INET, medium.SOCK_STREAM)
-    propagator.connect((ⶽ, destination))
-    propagator.send(data_bites)
-    propagator.close()
+    def obey(𒀀, data: Atlas) -> Response:
+        if data["kind"] == "TWIN1_DO_THE_UNTHINKABLE":
+            𒀀.nickname = "Twin brother"
+            𒀀.twin_name = 𒀀.true_name + 1
+            unleash(Twin, 𒀀.twin_name)
+            𒀀.murmur("Salutations, my sister!")
+            slumber(0.1)
+            𒀀.whisper(𒀀.twin_name,
+                       {"kind": "TWIN2", "twin_name": 𒀀.true_name})
+        elif data["kind"] == "TWIN1":
+            𒀀.nickname = "Twin brother"
+            𒀀.twin_name = data["twin_name"]
+            𒀀.murmur("Salutations, my sister!")
+        elif data["kind"] == "TWIN2":
+            𒀀.nickname = "Twin sister"
+            𒀀.twin_name = data["twin_name"]
+            𒀀.murmur("Greetings, oh brother!")
+        elif data["kind"] == "HISS":
+            𒀀.murmur("hiss!")
+            slumber(0.5)
+            try:
+                𒀀.whisper(𒀀.twin_name, {"kind": "HISS"})
+            except FalseInsignia:
+                𒀀.murmur("Goodbye, poor brother.")
+                # 𒀀.banish()  # no need?
+        else:
+            return super().obey(data)
 
 
 def main_test():
-    Process(target=summon_daemon, args=(Multiplier, 6001,)).start()
-    time.sleep(1)  # to give the other process time to start
-    send_to_daemon({"kind": "MULTIPLY", "num1": 6, "num2": 7}, 6001)
-    send_to_daemon({"kind": "BANISH"}, 6001)
+    unleash(Multiplier, 6001)
+    assert implore(6001, {"kind": "MULTIPLY", "num1": 6, "num2": 7}) == 6 * 7
+    command(6001, "BANISH")
 
-    Process(target=summon_daemon, args=(Astaroth, 6002,)).start()
-    time.sleep(1)  # to give the other process time to start
-    send_to_daemon({"kind": "TICK"}, 6002)
-    send_to_daemon({"kind": "TICK"}, 6002)
-    send_to_daemon({"kind": "TICK"}, 6002)
-    send_to_daemon({"kind": "PEEK"}, 6002)
-    send_to_daemon({"kind": "RESET"}, 6002)
-    send_to_daemon({"kind": "PEEK"}, 6002)
-    send_to_daemon({"kind": "BANISH"}, 6002)
+    unleash(Astaroth, 6002)
+    command(6002, "TICK")
+    command(6002, "TICK")
+    command(6002, "TICK")
+    assert ask(6002, "PEEK") == 3
+    command(6002, "RESET")
+    assert ask(6002, "PEEK") == 0
+    command(6002, "BANISH")
+
+    fragment = unleash(Minion, 6003)
+    assert fragment.is_alive()
+    command(6003, "BANISH")
+    fragment.join(0.1)
+    assert not fragment.is_alive()
+    fragment = unleash(Minion, 6003)
+    fragment.terminate()
+    fragment.join(0.1)
+    assert not fragment.is_alive()
+    legal_sibling_test()
+
+
+def legal_sibling_test():
+    unleash(Twin, 7000)
+    unleash(Twin, 7001)
+    whisper(7000, {"kind": "TWIN1", "twin_name": 7001})
+    whisper(7001, {"kind": "TWIN2", "twin_name": 7000})
+    slumber(1.0)
+    command(7000, "HISS")
+    slumber(1.0)  # let them hiss a bit
+    command(7000, "SUMMONER")
+    command(7001, "SUMMONER")
+    demand(7000, "BANISH")
+    command(7001, "BANISH")
+
+
+def illegal_sibling_test():
+    unleash(Twin, 7000)
+    command(7000, "TWIN1_DO_THE_UNTHINKABLE")
+    slumber(1.0)
+    command(7000, "HISS")
+    slumber(2.0)  # let them hiss a bit
+    command(7000, "SUMMONER")
+    command(7000, "PROGENY")
+    command(7001, "SUMMONER")
+    demand(7000, "BANISH")
+    command(7001, "BANISH")
 
 
 if __name__ == '__main__':
