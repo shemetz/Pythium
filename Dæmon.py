@@ -1,5 +1,6 @@
 from ancient.mesopotamia import *
 from ancient.peru import *
+from ancient.canaan import *
 from circumstances import *
 
 
@@ -164,6 +165,7 @@ class Dæmon:
             # (possess the local host's cyberspace)
             ⶇ.ear.bind((ⶽ, ⶇ.true_name))
         except OSError:
+            ⶇ.banish()
             raise DuplicateInsignia(
                 f"An entity with the true name '{ⶇ.true_name}' is already"
                 f" lurking within the cyberspace!"
@@ -172,13 +174,16 @@ class Dæmon:
         ⶇ.state = "LURKING"
         ⶇ.whisper(Ⳛ, {"kind": "LURKING"})
         while ⶇ.state == "LURKING":
-            bond, addr = ⶇ.ear.accept()
-            data = Dæmon.hear(bond)
-            answer = ⶇ.receive(data)
-            if data.get("awaiting_response"):
-                reply = {"response": answer}
-                response = Dæmon.translate(reply)
-                bond.send(response)
+            try:
+                bond, addr = ⶇ.ear.accept()
+                data = Dæmon.hear(bond)
+                answer = ⶇ.receive(data)
+                if data.get("awaiting_response"):
+                    reply = {"response": answer}
+                    response = Dæmon.translate(reply)
+                    bond.send(response)
+            except Exception as e:
+                ⶇ.shriek("SCREECH!" + "\n" + unearth(e))
 
     def receive(ⶇ, data: Atlas) -> Atlas:
         """This is automantically called when anyone whispers to the Dæmon.
@@ -208,6 +213,10 @@ class Dæmon:
         """Whisper a word or two to the Obedience Scheme, so that it dutifully
         etches it into the eternal logs."""
         ⶇ.whisper(Ⳛ, {"kind": "MURMUR", "message": message})
+
+    def shriek(ⶇ, message: speech):
+        """Shriek in terror at the Obedience Scheme."""
+        ⶇ.whisper(Ⳛ, {"kind": "SHRIEK", "message": message})
 
     def banish(ⶇ):
         """Banish this dæmon from the mortal plane."""
@@ -257,7 +266,8 @@ class Dæmon:
                 ⶇ.murmur(f"I have summoned {', '.join(p.name for p in prog)}.")
             else:
                 ⶇ.murmur("I have not summoned anything, truly.")
-
+        elif kind == "EXORCISE":
+            raise DæmonicExorcism()
         else:
             return apathy  # found no matching instinct
         return compliance  # found matching instinct

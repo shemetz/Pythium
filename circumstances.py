@@ -61,3 +61,8 @@ class DæmonsAreNotAllowedToHaveChildren(Exception):
    """
         err = "".join(random.choice("6@$#%") if c == "6" else c for c in err)
         super().__init__(err)
+
+
+class DæmonicExorcism(Exception):
+    def __init__(self):
+        super().__init__("Dæmons are pained by exorcism! Stop doing that.")
